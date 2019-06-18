@@ -123,8 +123,8 @@ func getCommandLineOptions() {
 	flag.StringVar(&listenIp, "listen_ip", "127.0.0.1", "Listen IP Address")
 	flag.IntVar(&listenPort, "listen_port", 9980, "Listen Port")
 
-	flag.StringVar(&logPath, "logfile", "login_exporter.log", "Log file path")
-	flag.StringVar(&logLevel, "loglevel", "INFO", "Log level")
+	flag.StringVar(&logPath, "log_file", "login_exporter.log", "Log file path")
+	flag.StringVar(&logLevel, "log_level", "INFO", "Log level")
 
 	flag.IntVar(&timeout, "timeout", 60, "Timeout in seconds")
 
@@ -201,7 +201,7 @@ func loginShibboleth(page *agouti.Page, urlText string, username string, passwor
 	}
 	if usernameXpath == "" && passwordXpath == "" && submitXpath == "" {
 		usernameXpath = "//input[@id='username']"
-		passwordXpath = "//input[@password='username']"
+		passwordXpath = "//input[@id='password']"
 		submitXpath = "//button[@class='aai_login_button']"
 	}
 	usernameField := page.FindByXPath(usernameXpath)

@@ -11,3 +11,4 @@ targets:
     expected_text: ""
     ssl_check: no
     debug: no
+    method: "POST"

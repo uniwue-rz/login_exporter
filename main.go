@@ -9,7 +9,7 @@ import (
 )
 
 func probeHandler(w http.ResponseWriter, r *http.Request, configs LoginConfigs) {
-	loginType  := ""
+	var loginType = ""
 	// Extract the target from the url
 	target := r.URL.Query().Get("target")
 	if target == "" {
@@ -27,7 +27,7 @@ func probeHandler(w http.ResponseWriter, r *http.Request, configs LoginConfigs) 
 				"subsystem": "probe_handler",
 				"part":      "target_config_check",
 			}).Error("The given target does not have configuration")
-	} else{
+	} else {
 		loginType = targetConfig.LoginType
 	}
 	// Get the status and elapsed time for the tests
@@ -74,7 +74,7 @@ func main() {
 		log.Fields{
 			"subsystem": "main",
 			"part":      "port_setting",
-		}).Info("Started Listening to Port " + ":" + fmt.Sprintf("%v", listenPort))
+		}).Info("Started Listening on " + fmt.Sprintf("%s", listenIp) + ":" + fmt.Sprintf("%v", listenPort))
 
-	logger.Fatal(http.ListenAndServe(":"+fmt.Sprintf("%v", listenPort), nil))
+	logger.Fatal(http.ListenAndServe(fmt.Sprintf("%s", listenIp)+":"+fmt.Sprintf("%v", listenPort), nil))
 }

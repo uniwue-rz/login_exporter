@@ -1,0 +1,21 @@
+[Unit]
+Description=Login Exporter
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/login_exporter.pid
+User=prometheus
+Group=prometheus
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/login_exporter \
+--config=/etc/prometheus/login_exporter/login.yaml \
+--listen_ip=127.0.0.1 \
+--listen_port=9890/ \
+--log_level=WARNING \
+--log_path=/var/log/prometheus/login_exporter.log
+SyslogIdentifier=login_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
