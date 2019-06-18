@@ -9,6 +9,17 @@ import (
 )
 
 func probeHandler(w http.ResponseWriter, r *http.Request, configs LoginConfigs) {
+
+	// Logs all the connections
+	logger.WithFields(
+		log.Fields{
+			"subsytem": "probe_handler",
+			"part":     "connection_info",
+			"user_address":       r.RemoteAddr,
+			"server_host":     r.Host,
+			"user_agent":    r.UserAgent(),
+		}).Info("This connection was established")
+
 	var loginType = ""
 	// Extract the target from the url
 	target := r.URL.Query().Get("target")
