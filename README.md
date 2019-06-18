@@ -42,7 +42,7 @@ The following parameters can be set for the application:
 | -listen_port| 9980              | The port the application is listening to|
 | -log_level  | INFO              | The log level for the application|
 | -log_path   | login_exporter.log| The path for the log file. This should be writable by the running user|
-| -timeout    | 60                | The timeout for the application to stop the check|
+| -timeout    | 60                | The timeout for the application to stop the check in seconds|
 
 
 ## Login.YML
@@ -224,6 +224,9 @@ as it was discussed above.
 go get
 go build -o ./login_exporter
 ```
+
+Or If you want to create a binary for several platforms at once, you can
+use the `go_build.sh` script.
 
 ## Change Log
 
