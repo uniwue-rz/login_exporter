@@ -1,0 +1,5 @@
+*.log
+login.yml
+go_build_*
+login_exporter
+.idea

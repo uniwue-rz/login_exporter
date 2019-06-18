@@ -1,0 +1,13 @@
+targets:
+  - url: ""
+    username: ""
+    password: ""
+    certificate: ""
+    login_type: simple_form
+    username_xpath: "//input[@id='username']"
+    password_xpath: "//input[@id='password']"
+    submit_xpath: "//input[@name='submit']"
+    certificate_xpath: ""
+    expected_text: ""
+    ssl_check: no
+    debug: no
