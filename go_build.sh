@@ -101,4 +101,4 @@ if [[ "${FAILURES}" != "" ]]; then
   exit 1
 fi
 
-md5 *.run *.exe > md5sum.txt
+sha256sum *.run *.exe > hashes_sha256.txt
