@@ -180,7 +180,7 @@ In `prometheus.yaml the following settings should be enough:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 127.0.0.1:9115
+        replacement: 127.0.0.1:9980
     file_sd_configs:
     - refresh_interval: 2m
       files:
