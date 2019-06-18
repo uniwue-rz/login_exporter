@@ -1,3 +1,6 @@
+*.txt
+*.run
+*.exe
 *.log
 login.yml
 go_build_*
