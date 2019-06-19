@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.0.2] 2019-06-19
+
+- Added target as own parameter different from the url
+- Added submit_type parameter which can be used for buttons or forms that can be clicked or submitted
+- Some fixes in the application it self
+- Allow logout to also be initiated, when the xpath exists
+- Allow No Auth, when the page does not have any auth
+
 ## [0.0.1] 2019-06-18
 
 - First release

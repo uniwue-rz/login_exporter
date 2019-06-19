@@ -28,6 +28,7 @@ type LoginConfigs struct {
 /// that is used to read the yaml files.
 type SingleLoginConfig struct {
 	Url               string `yaml:"url"`
+	Target            string `yaml:"target"`
 	Username          string `yaml:"username"`
 	Password          string `yaml:"password"`
 	Certificate       string `yaml:"certificate"`
@@ -41,6 +42,8 @@ type SingleLoginConfig struct {
 	SSLCheck          bool   `yaml:"ssl_check"`
 	Debug             bool   `yaml:"debug"`
 	Method            string `yaml:"method"`
+	SubmitType        string `yaml:"submit_type"`
+	LogoutXpath       string `yaml:"logout_xpath"`
 }
 
 /// getChromeOptions Returns the options for the chrome driver that is used
@@ -149,7 +152,7 @@ func getLogger() *log.Logger {
 
 /// loginSimpleForm Logs in the simple for using the username, password and the submit button
 func loginSimpleForm(page *agouti.Page, urlText string, usernameXpath string, passwordXpath string, submitXpath string,
-	username string, password string) {
+	username string, password string, submitType string) {
 	err := page.Navigate(urlText)
 	if err != nil {
 		logger.WithFields(
@@ -178,7 +181,11 @@ func loginSimpleForm(page *agouti.Page, urlText string, usernameXpath string, pa
 			}).Warningln(err.Error())
 	}
 	submitField := page.FindByXPath(submitXpath)
-	err = submitField.Submit()
+	if submitType == "click" {
+		err = submitField.Click()
+	} else {
+		err = submitField.Submit()
+	}
 	if err != nil {
 		logger.WithFields(
 			log.Fields{
@@ -190,7 +197,7 @@ func loginSimpleForm(page *agouti.Page, urlText string, usernameXpath string, pa
 
 /// loginShibboleth Logs in the shibboleth system using the given username and password
 func loginShibboleth(page *agouti.Page, urlText string, username string, password string, usernameXpath string,
-	passwordXpath string, submitXpath string) {
+	passwordXpath string, submitXpath string, submitType string) {
 	err := page.Navigate(urlText)
 	if err != nil {
 		logger.WithFields(
@@ -222,8 +229,15 @@ func loginShibboleth(page *agouti.Page, urlText string, username string, passwor
 				"part":      "password_field",
 			}).Warningln(err.Error())
 	}
+	if submitType == "" {
+		submitType = "click"
+	}
 	submitField := page.FindByXPath(submitXpath)
-	err = submitField.Click()
+	if submitType == "click" {
+		err = submitField.Click()
+	} else {
+		err = submitField.Submit()
+	}
 	if err != nil {
 		logger.WithFields(
 			log.Fields{
@@ -300,8 +314,33 @@ func loginBasicAuth(page *agouti.Page, urlText string, username string, password
 	}
 }
 
+// logOut Logs out of the given page using the xpath that is given for the logout.
+func logOut(page *agouti.Page, logoutXpath string, submitType string) {
+	logoutField := page.FindByXPath(logoutXpath)
+	if submitType == "click" {
+		err := logoutField.Click()
+		if err != nil {
+			logger.WithFields(
+				log.Fields{
+					"subsystem": "logout",
+					"part":      "click",
+				}).Warningln(err.Error())
+		}
+	} else {
+		err := logoutField.Submit()
+		if err != nil {
+			logger.WithFields(
+				log.Fields{
+					"subsystem": "logout",
+					"part":      "submit",
+				}).Warningln(err.Error())
+		}
+	}
+}
+
 /// loginPasswordOnly Logs in the given website with only password and the xpath to find the field
-func loginPasswordOnly(page *agouti.Page, urlText string, passwordXPath string, submitXpath string, password string) {
+func loginPasswordOnly(page *agouti.Page, urlText string, passwordXPath string, submitXpath string, password string,
+	submitType string) {
 	err := page.Navigate(urlText)
 	if err != nil {
 		logger.WithFields(
@@ -320,7 +359,11 @@ func loginPasswordOnly(page *agouti.Page, urlText string, passwordXPath string, 
 			}).Warningln(err.Error())
 	}
 	submitField := page.FindByXPath(submitXpath)
-	err = submitField.Submit()
+	if submitType == "click" {
+		err = submitField.Click()
+	} else {
+		err = submitField.Submit()
+	}
 	if err != nil {
 		logger.WithFields(
 			log.Fields{
@@ -341,6 +384,7 @@ func checkExpected(page *agouti.Page, expectedXPath string, expectedText string)
 					"subsystem": "check_expected",
 					"part":      "xpath_data",
 				}).Warningln(err.Error())
+			return false
 		}
 		return expectedFieldText == expectedText
 	}
@@ -351,8 +395,21 @@ func checkExpected(page *agouti.Page, expectedXPath string, expectedText string)
 				"subsystem": "check_expected",
 				"part":      "match_all_data",
 			}).Warningln(err.Error())
+		return false
 	}
 	return strings.Contains(content, expectedText)
+}
+
+/// getNoLogin The no login function that only returns the page without any submissions
+func getNoLogin(page *agouti.Page, urlText string) {
+	err := page.Navigate(urlText)
+	if err != nil {
+		logger.WithFields(
+			log.Fields{
+				"subsystem": "driver",
+				"part":      "navigation_error",
+			}).Warningln(err.Error())
+	}
 }
 
 /// checkExpectedResponse Checks if the expected string exists in the http.Response
@@ -383,17 +440,16 @@ func getStatus(config SingleLoginConfig) (status bool, elapsed float64) {
 		err = page.SetPageLoad(timeout * 1000)
 	}
 
-	// Start counting milliseconds
 	start := time.Now()
 	switch config.LoginType {
 	case "simple_form":
 		loginSimpleForm(page, config.Url, config.UsernameXpath, config.PasswordXpath, config.SubmitXpath,
-			config.Username, config.Password)
+			config.Username, config.Password, config.SubmitType)
 		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "shibboleth":
 		loginShibboleth(page, config.Url, config.Username, config.Password, config.UsernameXpath,
-			config.PasswordXpath, config.SubmitXpath)
+			config.PasswordXpath, config.SubmitXpath, config.SubmitType)
 		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "basic_auth":
@@ -401,7 +457,7 @@ func getStatus(config SingleLoginConfig) (status bool, elapsed float64) {
 		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "password_only":
-		loginPasswordOnly(page, config.Url, config.PasswordXpath, config.SubmitXpath, config.Password)
+		loginPasswordOnly(page, config.Url, config.PasswordXpath, config.SubmitXpath, config.Password, config.SubmitType)
 		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "api":
@@ -409,10 +465,18 @@ func getStatus(config SingleLoginConfig) (status bool, elapsed float64) {
 			config.Method)
 		status = checkExpectedResponse(response, config.ExpectedText)
 		break
+	case "no_auth":
+		getNoLogin(page, config.Url)
+		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
+		break
 	}
 	end := time.Now()
 	elapsed = end.Sub(start).Seconds()
-	// Stop counting milliseconds
+
+	// logout if the value is set
+	if config.LogoutXpath != "" {
+		logOut(page, config.LogoutXpath, config.SubmitType)
+	}
 
 	if err == nil {
 		err = page.CloseWindow()

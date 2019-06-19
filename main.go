@@ -66,7 +66,7 @@ func probeHandler(w http.ResponseWriter, r *http.Request, configs LoginConfigs) 
 /// findTargetInConfig Finds the given target in login configs
 func findTargetInConfig(configs LoginConfigs, target string) (SingleLoginConfig, error) {
 	for _, config := range configs.Configs {
-		if config.Url == target {
+		if config.Target == target {
 			return config, nil
 		}
 	}

@@ -1,5 +1,6 @@
 targets:
-  - url: ""
+  - url: "the-url-that-should-be-called"
+    target: "the-target-that-is-used-to-find-conf"
     username: ""
     password: ""
     certificate: ""
@@ -12,3 +13,5 @@ targets:
     ssl_check: no
     debug: no
     method: "POST"
+    submit_type: "click"
+    logout_xpath: ""

@@ -73,6 +73,7 @@ kind of login forms. The following parameters should be set:
 | parameter      | help           |
 |----------------|----------------|
 | login_type     | simple_form    |
+| target         | The target that is searched for to find the config|
 | url            | The url that login form is included|
 | username       | The username that should be used for the login|
 | password       | The password that should be used for the login|
@@ -86,6 +87,8 @@ The following parameters are optional:
 | parameter          | help           |
 |--------------------|----------------|
 | expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
+| submit_type        | The type of submission that should be used it can be click or submit, default is submit|
+| logout_xpath       | The xpath that should be used for the logout button|
 
 
 ### Shibboleth 
@@ -98,6 +101,7 @@ be set for the Shibboleth:
 | parameter      | help           |
 |----------------|----------------|
 | login_type     | shibboleth     |
+| target         | The target that is searched for to find the config|
 | url            | The url that login form is included|
 | username       | The username that should be used for the login|
 | password       | The password that should be used for the login|
@@ -111,6 +115,7 @@ The following parameters are optional:
 | password_xpath | The xpath address of the password field (must be unique) for Shibboleth default value is the `//input[@id='password']`|
 | submit_xpath   | The xpath address of the submit button (must be unique) for Shibboleth default value is the `//button[@class='aai_login_button']`|
 | expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
+| submit_type        | The type of submission that should be used it can be click or submit, default is submit|
 
 ### Basic Auth
 
@@ -121,6 +126,7 @@ following parameters should be set for the application:
 |----------------|----------------|
 | login_type     | basic_auth     |
 | url            | The url that login form is included|
+| target         | The target that is searched for to find the config|
 | username       | The username that should be used for the login|
 | password       | The password that should be used for the login|
 | expected_text  | The text that is expected to be there|
@@ -141,6 +147,7 @@ should be set:
 |----------------|----------------|
 | login_type     | password_only     |
 | url            | The url that login form is included|
+| target         | The target that is searched for to find the config|
 | password       | The password that should be used for the login|
 | password_xpath | The xpath address of the password field (must be unique)|
 | expected_text  | The text that is expected to be there|
@@ -150,6 +157,8 @@ The following parameters are optional
 | parameter          | help           |
 |--------------------|----------------|
 | expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
+| submit_type        | The type of submission that should be used it can be click or submit, default is submit|
+| logout_xpath       | The xpath that should be used for the logout button|
 
 ### API
 
@@ -162,6 +171,7 @@ parameters should be set:
 |----------------|----------------|
 | login_type     | api     |
 | url            | The url that login form is included|
+| target         | The target that is searched for to find the config|
 | password       | This could be key, password or token that should be used|
 | password_xpath | This is the parameter that should be used for the token or password|
 | expected_text  | The text that is expected to be there|
@@ -173,6 +183,25 @@ The following parameters are optional:
 | username       | The username that should be used for the login|
 | username_xpath | The parameter that is used for the username|
 | method         | The method that should be used for the call default is POST|
+
+### No Auth
+
+When the page is only protected by IP address firewall or does not
+have any authentication, but still should be checked for a given text
+this method can be used.
+
+| parameter      | help           |
+|----------------|----------------|
+| login_type     | no_auth     |
+| url            | The url that login form is included|
+| target         | The target that is searched for to find the config|
+| expected_text  | The text that is expected to be there|
+
+These parameters are optional:
+
+| parameter          | help           |
+|--------------------|----------------|
+| expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
 
 ## Configuring Prometheus
 
@@ -209,11 +238,10 @@ In `login_targets.json` the following settings would be enough:
       "group": "apps",
       "host": "hostname",
       "ip": "ip_address",
-      "job": "login_exporter",
-      "module": "http_2xx"
+      "job": "login_exporter"
     },
     "targets": [
-      "target_url_which_is_defined_in_login.yml_before"
+      "target_which_is_defined_in_login.yml_before"
     ]
   }
 ]
@@ -222,10 +250,11 @@ In `login_targets.json` the following settings would be enough:
 ## Development
 
 This application is open-source and can be extended. This repository
-is mirror of our home owned repository, so the data here can not be
-merged. But pull requests are still welcome. It will extract the data
-and add them manually to our internal repo. You still can fork this
-repository and add your changes too.
+is a mirror of our home owned repository, as a result the pull request
+here can not be directly merged. But pull requests are still welcome. 
+I will extract the patch and add it manually to our internal repo, when
+it is acceptable patch. You still can fork this repository and add your 
+changes too.
 
 ### Build
 
@@ -238,7 +267,7 @@ go get
 go build -o ./login_exporter
 ```
 
-Or If you want to create a binary for several platforms at once, you can
+Or if you want to create a binary for several platforms at once, you can
 use the `go_build.sh` script.
 
 ## Change Log
