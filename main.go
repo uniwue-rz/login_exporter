@@ -50,7 +50,7 @@ func probeHandler(w http.ResponseWriter, r *http.Request, configs LoginConfigs) 
 	var statusMetric = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "login_status",
-			Help: "Shows the status of the given data 0 for failure 1 for success"},
+			Help: "Shows the status of the given target 0 for failure 1 for success"},
 		[]string{"target", "login_type"})
 	var elapsedMetric = prometheus.NewGauge(
 		prometheus.GaugeOpts{Name: "login_elapsed_seconds", Help: "Shows how long it took the get the data in seconds"})
