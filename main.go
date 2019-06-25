@@ -49,11 +49,11 @@ func probeHandler(w http.ResponseWriter, r *http.Request, configs LoginConfigs) 
 	}
 	var statusMetric = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "status",
+			Name: "login_status",
 			Help: "Shows the status of the given data 0 for failure 1 for success"},
-		[]string{"targetUrl", "login_type"})
+		[]string{"target", "login_type"})
 	var elapsedMetric = prometheus.NewGauge(
-		prometheus.GaugeOpts{Name: "elapsed_seconds", Help: "Shows how long it took the get the data in seconds"})
+		prometheus.GaugeOpts{Name: "login_elapsed_seconds", Help: "Shows how long it took the get the data in seconds"})
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(statusMetric)
 	registry.MustRegister(elapsedMetric)

@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.3] 2019-06-25
+
+- Changed the name of the variables for the metrics to have login in them to avoid collisions
+
 ## [0.0.2] 2019-06-19
 
 - Added target as own parameter different from the url
