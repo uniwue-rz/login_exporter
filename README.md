@@ -89,6 +89,7 @@ The following parameters are optional:
 | expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
 | submit_type        | The type of submission that should be used it can be click or submit, default is submit|
 | logout_xpath       | The xpath that should be used for the logout button|
+| wait_time          | The time that should the form submitter wait for the page to load in seconds|
 
 
 ### Shibboleth 

@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.4] 2019-06-26
+
+- Added a possibility to wait for the page to be rendered, needed for the slow pages
+
 ## [0.0.3] 2019-06-25
 
 - Changed the name of the variables for the metrics to have login in them to avoid collisions

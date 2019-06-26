@@ -44,6 +44,7 @@ type SingleLoginConfig struct {
 	Method            string `yaml:"method"`
 	SubmitType        string `yaml:"submit_type"`
 	LogoutXpath       string `yaml:"logout_xpath"`
+	WaitTime          int    `yaml:"wait_time"`
 }
 
 /// getChromeOptions Returns the options for the chrome driver that is used
@@ -152,7 +153,7 @@ func getLogger() *log.Logger {
 
 /// loginSimpleForm Logs in the simple for using the username, password and the submit button
 func loginSimpleForm(page *agouti.Page, urlText string, usernameXpath string, passwordXpath string, submitXpath string,
-	username string, password string, submitType string) {
+	username string, password string, submitType string, wait int) {
 	err := page.Navigate(urlText)
 	if err != nil {
 		logger.WithFields(
@@ -161,6 +162,14 @@ func loginSimpleForm(page *agouti.Page, urlText string, usernameXpath string, pa
 				"part":      "navigation_error",
 			}).Warningln(err.Error())
 		panic(err)
+	}
+	err = page.SetImplicitWait(wait * 1000)
+	if err != nil {
+		logger.WithFields(
+			log.Fields{
+				"subsystem": "login_simple_form",
+				"part":      "waiting",
+			}).Warningln(err.Error())
 	}
 	usernameField := page.FindByXPath(usernameXpath)
 	err = usernameField.SendKeys(username)
@@ -444,7 +453,7 @@ func getStatus(config SingleLoginConfig) (status bool, elapsed float64) {
 	switch config.LoginType {
 	case "simple_form":
 		loginSimpleForm(page, config.Url, config.UsernameXpath, config.PasswordXpath, config.SubmitXpath,
-			config.Username, config.Password, config.SubmitType)
+			config.Username, config.Password, config.SubmitType, config.WaitTime)
 		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "shibboleth":
