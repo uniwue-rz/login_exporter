@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.5] 2019-07-08
+
+- Remove the no-sandbox parameter to make chrome driver killed cleanly.
+
 ## [0.0.4] 2019-06-26
 
 - Added a possibility to wait for the page to be rendered, needed for the slow pages

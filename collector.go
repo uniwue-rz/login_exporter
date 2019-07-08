@@ -56,7 +56,6 @@ func getChromeOptions() agouti.Option {
 		"--no-first-run",
 		"--no-default-browser-check",
 		"--allow-insecure-localhost",
-		"--no-sandbox",
 	})
 }
 
