@@ -160,7 +160,6 @@ func loginSimpleForm(page *agouti.Page, urlText string, usernameXpath string, pa
 				"subsystem": "driver",
 				"part":      "navigation_error",
 			}).Warningln(err.Error())
-		panic(err)
 	}
 	err = page.SetImplicitWait(wait * 1000)
 	if err != nil {
