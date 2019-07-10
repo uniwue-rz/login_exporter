@@ -59,9 +59,16 @@ func getChromeOptions() agouti.Option {
 	})
 }
 
+/// getChromeExcludedOptions Returns the excluded options
+func getChromeExcludedOptions() agouti.Option {
+	return agouti.ChromeOptions("excludeSwitches", []string{
+		"ignore-certificate-errors",
+	})
+}
+
 ///startDriver Starts the given driver on the machine
 func startDriver() *agouti.WebDriver {
-	driver := agouti.ChromeDriver(getChromeOptions())
+	driver := agouti.ChromeDriver(getChromeOptions(), getChromeExcludedOptions(), agouti.RejectInvalidSSL)
 	if err := driver.Start(); err != nil {
 		logger.WithFields(
 			log.Fields{
@@ -479,7 +486,6 @@ func getStatus(config SingleLoginConfig) (status bool, elapsed float64) {
 	}
 	end := time.Now()
 	elapsed = end.Sub(start).Seconds()
-
 	// logout if the value is set
 	if config.LogoutXpath != "" {
 		logOut(page, config.LogoutXpath, config.SubmitType)
