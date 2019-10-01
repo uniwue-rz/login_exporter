@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.8] 2019-10-01
+
+- Wait for the content to be retrieved. It is only a second.
+
 ## [0.0.7] 2019-07-10
 
 - Dont Allow the browser to open insecure pages.

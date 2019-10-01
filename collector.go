@@ -402,6 +402,7 @@ func checkExpected(page *agouti.Page, expectedXPath string, expectedText string)
 		}
 		return expectedFieldText == expectedText
 	}
+	time.Sleep(1 * time.Second)
 	content, err := page.HTML()
 	if err != nil {
 		logger.WithFields(
