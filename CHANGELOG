@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.10] 2019-10-24
+
+- Added 2 seconds for the waiting when the server is used a lot
+
 ## [0.0.9] 2019-10-23
 
 - Removed the redundant time conversion
