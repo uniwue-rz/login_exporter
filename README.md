@@ -90,7 +90,9 @@ The following parameters are optional:
 | submit_type        | The type of submission that should be used it can be click or submit, default is submit|
 | logout_xpath       | The xpath that should be used for the logout button|
 | wait_time          | The time that should the form submitter wait for the page to load in seconds|
-
+| expected_text_frame| The frame that the expected text resides|
+| logout_submit_type | The submit type for the logout|
+| logout_frame       | The frame that should be used for the logout|
 
 ### Shibboleth 
 
@@ -117,6 +119,10 @@ The following parameters are optional:
 | submit_xpath   | The xpath address of the submit button (must be unique) for Shibboleth default value is the `//button[@class='aai_login_button']`|
 | expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
 | submit_type        | The type of submission that should be used it can be click or submit, default is submit|
+| expected_text_frame| The frame that the expected text resides|
+| logout_submit_type | The submit type for the logout|
+| logout_frame       | The frame that should be used for the logout|
+
 
 ### Basic Auth
 
@@ -137,6 +143,9 @@ The following parameters are optional:
 | parameter          | help           |
 |--------------------|----------------|
 | expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
+| expected_text_frame| The frame that the expected text resides|
+| logout_submit_type | The submit type for the logout|
+| logout_frame       | The frame that should be used for the logout|
 
 ### Password Only
 
@@ -160,6 +169,9 @@ The following parameters are optional
 | expected_text_xpath| The expected text xpath (must be unique), if not given the whole text is searched for the string|
 | submit_type        | The type of submission that should be used it can be click or submit, default is submit|
 | logout_xpath       | The xpath that should be used for the logout button|
+| expected_text_frame| The frame that the expected text resides|
+| logout_submit_type | The submit type for the logout|
+| logout_frame       | The frame that should be used for the logout|
 
 ### API
 

@@ -39,11 +39,14 @@ type SingleLoginConfig struct {
 	LoginType         string `yaml:"login_type"`
 	ExpectedText      string `yaml:"expected_text"`
 	ExpectedTextXpath string `yaml:"expected_text_xpath"`
+	ExpectedTextFrame string `yaml:"expected_text_frame"`
 	SSLCheck          bool   `yaml:"ssl_check"`
 	Debug             bool   `yaml:"debug"`
 	Method            string `yaml:"method"`
 	SubmitType        string `yaml:"submit_type"`
 	LogoutXpath       string `yaml:"logout_xpath"`
+	LogoutSubmitType  string `yaml:"logout_submit_type"`
+	LogoutFrame       string `yaml:"logout_frame"`
 	WaitTime          int    `yaml:"wait_time"`
 }
 
@@ -289,7 +292,7 @@ func loginApi(urlText string, usernameXpath string, passwordXpath string, userna
 	} else {
 		req.Header.Set("Content-Type", "application/json")
 		client := &http.Client{
-			Timeout: time.Duration(time.Duration(timeout) * time.Second),
+			Timeout: time.Duration(timeout) * time.Second,
 		}
 		resp, err := client.Do(req)
 		if err != nil {
@@ -329,7 +332,10 @@ func loginBasicAuth(page *agouti.Page, urlText string, username string, password
 }
 
 // logOut Logs out of the given page using the xpath that is given for the logout.
-func logOut(page *agouti.Page, logoutXpath string, submitType string) {
+func logOut(page *agouti.Page, logoutXpath string, submitType string, framePath string) {
+	if framePath != "" {
+		selectFrame(framePath, page)
+	}
 	logoutField := page.FindByXPath(logoutXpath)
 	if submitType == "click" {
 		err := logoutField.Click()
@@ -349,6 +355,9 @@ func logOut(page *agouti.Page, logoutXpath string, submitType string) {
 					"part":      "submit",
 				}).Warningln(err.Error())
 		}
+	}
+	if framePath != "" {
+		switchToRootFrame(page)
 	}
 }
 
@@ -440,6 +449,30 @@ func checkExpectedResponse(response *http.Response, expectedText string) bool {
 	return strings.Contains(string(content), expectedText)
 }
 
+/// selectFrame selects given frame for the given page
+func selectFrame(framePath string, page *agouti.Page) {
+	err := page.Find(framePath).SwitchToFrame()
+	if err != nil {
+		logger.WithFields(
+			log.Fields{
+				"subsystem": "check_expected",
+				"part":      "switch",
+			}).Warningln(err.Error())
+	}
+}
+
+/// switchToRootFrame Switches to the root frame
+func switchToRootFrame(page *agouti.Page) {
+	err := page.SwitchToRootFrame()
+	if err != nil {
+		logger.WithFields(
+			log.Fields{
+				"subsystem": "check_expected",
+				"part":      "switch_to_root_frame",
+			}).Warningln(err.Error())
+	}
+}
+
 ///getStatus Returns the data from the server
 func getStatus(config SingleLoginConfig) (status bool, elapsed float64) {
 	status = false
@@ -460,36 +493,39 @@ func getStatus(config SingleLoginConfig) (status bool, elapsed float64) {
 	case "simple_form":
 		loginSimpleForm(page, config.Url, config.UsernameXpath, config.PasswordXpath, config.SubmitXpath,
 			config.Username, config.Password, config.SubmitType, config.WaitTime)
-		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "shibboleth":
 		loginShibboleth(page, config.Url, config.Username, config.Password, config.UsernameXpath,
 			config.PasswordXpath, config.SubmitXpath, config.SubmitType)
-		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "basic_auth":
 		loginBasicAuth(page, config.Url, config.Username, config.Password)
-		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
 	case "password_only":
 		loginPasswordOnly(page, config.Url, config.PasswordXpath, config.SubmitXpath, config.Password, config.SubmitType)
-		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
-		break
-	case "api":
-		response := loginApi(config.Url, config.UsernameXpath, config.PasswordXpath, config.Username, config.Password,
-			config.Method)
-		status = checkExpectedResponse(response, config.ExpectedText)
 		break
 	case "no_auth":
 		getNoLogin(page, config.Url)
-		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
 		break
+	}
+	if config.LoginType == "api" {
+		response := loginApi(config.Url, config.UsernameXpath, config.PasswordXpath, config.Username, config.Password,
+			config.Method)
+		status = checkExpectedResponse(response, config.ExpectedText)
+	} else {
+		if config.ExpectedTextFrame != "" {
+			selectFrame(config.ExpectedTextFrame, page)
+		}
+		status = checkExpected(page, config.ExpectedTextXpath, config.ExpectedText)
+		if config.ExpectedTextFrame != "" {
+			switchToRootFrame(page)
+		}
 	}
 	end := time.Now()
 	elapsed = end.Sub(start).Seconds()
 	// logout if the value is set
 	if config.LogoutXpath != "" {
-		logOut(page, config.LogoutXpath, config.SubmitType)
+		logOut(page, config.LogoutXpath, config.LogoutSubmitType, config.LogoutFrame)
 	}
 
 	if err == nil {

@@ -10,9 +10,13 @@ targets:
     submit_xpath: "//input[@name='submit']"
     certificate_xpath: ""
     expected_text: ""
+    expected_text_xpath: ""
+    expected_text_frame: ""
     ssl_check: no
     debug: no
     method: "POST"
     submit_type: "click"
     logout_xpath: ""
+    logout_submit_type: "click"
+    logout_frame: ""
     wait_time: 1000
